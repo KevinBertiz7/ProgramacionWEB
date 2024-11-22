@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel de Administración - Biblioteca Virtual</title>
+  </head>
+  <body>
+    <div class="sidebar">
+      <h2>Admin Panel</h2>
+      <ul class="sidebar-menu">
+        <li><a href="#dashboard">Dashboard</a></li>
+        <li><a href="#manage-books">Gestionar Libros</a></li>
+        <li><a href="#manage-users">Gestionar Usuarios</a></li>
+        <li><a href="#manage-multas">Gestion de Multas</a></li>
+        <li><a href="#reports">Reportes</a></li>
+        <li><a href="GestionBiblioteca.html">Volver a Biblioteca</a></li>
+      </ul>
+    </div>
+    <div class="main-content">
+      <div id="dashboard" class="panel">
+        <h1>Dashboard</h1>
+        <p>Bienvenido al panel de administración de la Biblioteca Virtual.</p>
+      </div>
+      <div id="manage-books" class="panel">
+        <h2>Gestionar Libros</h2>
+        <a href="#" class="btn" onclick="toggleBookForm()"
+          >Agregar Nuevo Libro</a
+        >
+        <div id="bookForm" style="display: none; margin-top: 20px">
+          <h3>Agregar Nuevo Libro</h3>
+          <form onsubmit="return false;">
+            <div class="form-group">
+              <label for="bookTitle">Título:</label>
+              <input type="text" id="bookTitle" required />
+            </div>
+            <div class="form-group">
+              <label for="bookAuthor">Autor:</label>
+              <input type="text" id="bookAuthor" required />
+            </div>
+            <div class="form-group">
+              <label for="bookCategory">Categoría:</label>
+              <select id="bookCategory">
+                <option value="ficcion">Ficción</option>
+                <option value="aventura">Aventura</option>
+                <option value="romance">Romance</option>
+                <option value="historia">Historia</option>
+                <option value="geografia">Geografía</option>
+              </select>
+            </div>
+            <button class="btn" onclick="addBook()">Guardar Libro</button>
+          </form>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Título</th>
+              <th>Autor</th>
+              <th>Categoría</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="bookList">
+            <!-- Los libros se agregarán aquí dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+      <div id="manage-users" class="panel">
+        <h2>Gestionar Usuarios</h2>
+
+        <!-- Botón para mostrar/ocultar el formulario -->
+        <button id="toggleUserFormBtn" class="btn">
+          Abrir Formulario de Usuario
+        </button>
+
+        <!-- Formulario para agregar nuevos usuarios -->
+        <form id="userForm" style="display: none">
+          <div class="form-group">
+            <input type="text" id="userName" placeholder="Nombre" required />
+            <input type="email" id="userEmail" placeholder="Email" required />
+            <select id="userRole" required>
+              <option value="" disabled selected>Seleccione un rol</option>
+              <option value="admin">Administrador</option>
+              <option value="editor">Editor</option>
+              <option value="viewer">Visualizador</option>
+            </select>
+            <button type="submit">Agregar Usuario</button>
+          </div>
+        </form>
+
+        <!-- Tabla para mostrar los usuarios -->
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Rol</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="userList">
+            <!-- Los usuarios se agregarán aquí dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+      <div id="manage-multas" class="panel">
+        <h2>Gestión de Multas</h2>
+        <button id="toggleFormBtn" class="btn">
+          Abrir Formulario de Multa
+        </button>
+        <!-- Formulario para agregar nuevas multas -->
+        <form id="addMultaForm">
+          <div class="form-group">
+            <input type="text" id="nombre" placeholder="Nombre" required />
+            <input type="email" id="email" placeholder="Email" required />
+            <input type="text" id="libro" placeholder="Libro" required />
+            <input type="date" id="fechaInicio" required />
+            <input type="date" id="fechaFin" required />
+            <button type="submit">Agregar Multa</button>
+          </div>
+        </form>
+
+        <!-- Tabla para mostrar las multas -->
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Libro</th>
+              <th>Fecha Inicio</th>
+              <th>Fecha Fin</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="multList">
+            <!-- Las multas se agregarán aquí dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- aqui script -->
+      <script>
+        function toggleBookForm() {
+          const form = document.getElementById("bookForm");
+          form.style.display = form.style.display === "none" ? "block" : "none";
+        }
+
+        function addBook() {
+          const title = document.getElementById("bookTitle").value;
+          const author = document.getElementById("bookAuthor").value;
+          const category = document.getElementById("bookCategory").value;
+
+          if (title && author) {
+            const book = { title, author, category };
+            let books = JSON.parse(localStorage.getItem("books")) || [];
+            books.push(book);
+            localStorage.setItem("books", JSON.stringify(books));
+
+            updateBookList();
+
+            document.getElementById("bookTitle").value = "";
+            document.getElementById("bookAuthor").value = "";
+            document.getElementById("bookCategory").value = "ficcion";
+
+            toggleBookForm();
+          } else {
+            alert("Por favor, complete todos los campos.");
+          }
+        }
+
+        function updateBookList() {
+          const bookList = document.getElementById("bookList");
+          bookList.innerHTML = "";
+          const books = JSON.parse(localStorage.getItem("books")) || [];
+
+          books.forEach((book, index) => {
+            const row = bookList.insertRow();
+            row.innerHTML = `
+                    <td>${book.title}</td>
+                    <td>${book.author}</td>
+                    <td>${book.category}</td>
+                    <td>
+                        <a href="#" onclick="editBook(${index})">Editar</a> |
+                        <a href="#" onclick="deleteBook(${index})">Eliminar</a>
+                    </td>
+                `;
+          });
+        }
+
+        function editBook(index) {
+          const books = JSON.parse(localStorage.getItem("books")) || [];
+          const book = books[index];
+
+          document.getElementById("bookTitle").value = book.title;
+          document.getElementById("bookAuthor").value = book.author;
+          document.getElementById("bookCategory").value = book.category;
+
+          toggleBookForm();
+          books.splice(index, 1);
+          localStorage.setItem("books", JSON.stringify(books));
+          updateBookList();
+        }
+
+        function deleteBook(index) {
+          if (confirm("¿Está seguro de que desea eliminar este libro?")) {
+            const books = JSON.parse(localStorage.getItem("books")) || [];
+            books.splice(index, 1);
+            localStorage.setItem("books", JSON.stringify(books));
+            updateBookList();
+          }
+        }
+
+        function updateUserList() {
+          const userList = document.getElementById("userList");
+          userList.innerHTML = "";
+          const users = JSON.parse(localStorage.getItem("users")) || [];
+
+          users.forEach((user, index) => {
+            const row = userList.insertRow();
+            row.innerHTML = `
+                    <td>${user.nombre}</td>
+                    <td>${user.email}</td>
+                    <td>${user.rol || "Usuario"}</td>
+                    <td>
+                        <a href="#" onclick="editUser(${index})">Editar</a> |
+                        <a href="#" onclick="deleteUser(${index})">Eliminar</a>
+                    </td>
+                `;
+          });
+        }
+
+        function editUser(index) {
+          alert("Función de editar usuario no implementada");
+        }
+
+        function deleteUser(index) {
+          if (confirm("¿Está seguro de que desea eliminar este usuario?")) {
+            const users = JSON.parse(localStorage.getItem("users")) || [];
+            users.splice(index, 1);
+            localStorage.setItem("users", JSON.stringify(users));
+            updateUserList();
+          }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+          updateBookList();
+          updateUserList();
+        });
+        document.addEventListener("DOMContentLoaded", () => {
+          const multList = document.getElementById("multList");
+          let multas = JSON.parse(localStorage.getItem("multas")) || []; // Cargar datos de Local Storage
+
+          // Función para guardar las multas en Local Storage
+          function guardarEnLocalStorage() {
+            localStorage.setItem("multas", JSON.stringify(multas));
+          }
+
+          // Función para renderizar la lista de multas
+          function renderMultas() {
+            multList.innerHTML = ""; // Limpia la lista
+            multas.forEach((multa, index) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                <td>${multa.nombre}</td>
+                <td>${multa.email}</td>
+                <td>${multa.libro}</td>
+                <td>${multa.fechaInicio}</td>
+                <td>${multa.fechaFin}</td>
+                <td>
+                <button onclick="editarMulta(${index})">Editar</button>
+                <button onclick="eliminarMulta(${index})">Eliminar</button>
+                </td>
+            `;
+              multList.appendChild(row);
+            });
+          }
+
+          // Función para agregar una multa
+          function agregarMulta(nombre, email, libro, fechaInicio, fechaFin) {
+            multas.push({ nombre, email, libro, fechaInicio, fechaFin });
+            guardarEnLocalStorage();
+            renderMultas();
+          }
+
+          // Función para eliminar una multa
+          window.eliminarMulta = function (index) {
+            multas.splice(index, 1);
+            guardarEnLocalStorage();
+            renderMultas();
+          };
+
+          // Función para editar una multa
+          window.editarMulta = function (index) {
+            const multa = multas[index];
+            const nuevoNombre =
+              prompt("Editar nombre", multa.nombre) || multa.nombre;
+            const nuevoEmail =
+              prompt("Editar email", multa.email) || multa.email;
+            const nuevoLibro =
+              prompt("Editar libro", multa.libro) || multa.libro;
+            const nuevaFechaInicio =
+              prompt("Editar fecha inicio", multa.fechaInicio) ||
+              multa.fechaInicio;
+            const nuevaFechaFin =
+              prompt("Editar fecha fin", multa.fechaFin) || multa.fechaFin;
+
+            multas[index] = {
+              nombre: nuevoNombre,
+              email: nuevoEmail,
+              libro: nuevoLibro,
+              fechaInicio: nuevaFechaInicio,
+              fechaFin: nuevaFechaFin
+            };
+            guardarEnLocalStorage();
+            renderMultas();
+          };
+
+          // Renderizar multas iniciales desde Local Storage
+          renderMultas();
+
+          // Manejar formulario de agregar multas
+          const addMultaForm = document.getElementById("addMultaForm");
+          addMultaForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const nombre = document.getElementById("nombre").value;
+            const email = document.getElementById("email").value;
+            const libro = document.getElementById("libro").value;
+            const fechaInicio = document.getElementById("fechaInicio").value;
+            const fechaFin = document.getElementById("fechaFin").value;
+
+            agregarMulta(nombre, email, libro, fechaInicio, fechaFin);
+
+            // Limpia el formulario
+            e.target.reset();
+          });
+          const toggleFormBtn = document.getElementById("toggleFormBtn");
+
+          // Alternar visibilidad del formulario
+          toggleFormBtn.addEventListener("click", () => {
+            if (
+              addMultaForm.style.display === "none" ||
+              !addMultaForm.style.display
+            ) {
+              addMultaForm.style.display = "block";
+              toggleFormBtn.textContent = "Ocultar Formulario";
+            } else {
+              addMultaForm.style.display = "none";
+              toggleFormBtn.textContent = "Agregar Multa";
+            }
+          });
+          const toggleUserFormBtn =
+            document.getElementById("toggleUserFormBtn");
+          const userForm = document.getElementById("userForm");
+
+          // Alternar visibilidad del formulario de usuarios
+          toggleUserFormBtn.addEventListener("click", () => {
+            if (userForm.style.display === "none" || !userForm.style.display) {
+              userForm.style.display = "block";
+              toggleUserFormBtn.textContent = "Cerrar Formulario de Usuario";
+            } else {
+              userForm.style.display = "none";
+              toggleUserFormBtn.textContent = "Abrir Formulario de Usuario";
+            }
+          });
+          const userNameInput = document.getElementById("userName");
+          const userEmailInput = document.getElementById("userEmail");
+          const userRoleInput = document.getElementById("userRole");
+          const userList = document.getElementById("userList");
+
+          let users = JSON.parse(localStorage.getItem("users")) || [];
+
+          // Guardar en Local Storage
+          function guardarEnLocalStorage() {
+            localStorage.setItem("users", JSON.stringify(users));
+          }
+
+          // Renderizar usuarios
+          function renderUsuarios() {
+            userList.innerHTML = "";
+            users.forEach((user, index) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+            <td>${user.name}</td>
+            <td>${user.email}</td>
+            <td>${user.role}</td>
+            <td>
+              <button onclick="editarUsuario(${index})">Editar</button>
+              <button onclick="eliminarUsuario(${index})">Eliminar</button>
+            </td>
+          `;
+              userList.appendChild(row);
+            });
+          }
+
+          // Agregar un usuario
+          userForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const newUser = {
+              name: userNameInput.value,
+              email: userEmailInput.value,
+              role: userRoleInput.value
+            };
+            users.push(newUser);
+            guardarEnLocalStorage();
+            renderUsuarios();
+            userForm.reset();
+            userForm.style.display = "none";
+            toggleUserFormBtn.textContent = "Abrir Formulario de Usuario";
+          });
+
+          // Editar un usuario
+          window.editarUsuario = (index) => {
+            const user = users[index];
+            userNameInput.value = user.name;
+            userEmailInput.value = user.email;
+            userRoleInput.value = user.role;
+
+            userForm.style.display = "block";
+            toggleUserFormBtn.textContent = "Cerrar Formulario de Usuario";
+
+            // Actualizar el usuario al guardar cambios
+            userForm.onsubmit = (e) => {
+              e.preventDefault();
+              users[index] = {
+                name: userNameInput.value,
+                email: userEmailInput.value,
+                role: userRoleInput.value
+              };
+              guardarEnLocalStorage();
+              renderUsuarios();
+              userForm.reset();
+              userForm.style.display = "none";
+              toggleUserFormBtn.textContent = "Abrir Formulario de Usuario";
+            };
+          };
+
+          // Eliminar un usuario
+          window.eliminarUsuario = (index) => {
+            if (confirm("¿Estás seguro de eliminar este usuario?")) {
+              users.splice(index, 1);
+              guardarEnLocalStorage();
+              renderUsuarios();
+            }
+          };
+
+          // Renderizar la lista inicial al cargar la página
+          renderUsuarios();
+        });
+      </script>
+
+      <style>
+        body {
+          font-family: "Arial", sans-serif;
+          background-color: #f0f4f8;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          min-height: 100vh;
+        }
+        .sidebar {
+          width: 250px;
+          background-color: #2c3e50;
+          color: white;
+          padding: 20px;
+        }
+        .sidebar h2 {
+          margin-bottom: 20px;
+          text-align: center;
+        }
+        .sidebar-menu {
+          list-style-type: none;
+          padding: 0;
+        }
+        .sidebar-menu li {
+          margin-bottom: 10px;
+        }
+        .sidebar-menu a {
+          color: white;
+          text-decoration: none;
+          display: block;
+          padding: 10px;
+          border-radius: 5px;
+          transition: background-color 0.3s;
+        }
+        .sidebar-menu a:hover {
+          background-color: #34495e;
+        }
+        .main-content {
+          flex-grow: 1;
+          padding: 20px;
+        }
+        .panel {
+          background-color: white;
+          border-radius: 8px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+          padding: 20px;
+          margin-bottom: 20px;
+        }
+        h1,
+        h2 {
+          color: #2c3e50;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 20px;
+        }
+        th,
+        td {
+          border: 1px solid #ddd;
+          padding: 12px;
+          text-align: left;
+        }
+        th {
+          background-color: #f2f2f2;
+          font-weight: bold;
+        }
+        .btn {
+          display: inline-block;
+          padding: 10px 15px;
+          background-color: #3498db;
+          color: white;
+          text-decoration: none;
+          border-radius: 5px;
+          transition: background-color 0.3s;
+          width: 300px;
+          text-align: center;
+        }
+        .btn:hover {
+          background-color: #2980b9;
+        }
+        .form-group {
+          margin-bottom: 15px;
+        }
+        .form-group label {
+          display: block;
+          margin-bottom: 5px;
+        }
+        .form-group input,
+        .form-group select {
+          width: 90%;
+          padding: 8px;
+          margin-bottom: 5px;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+        }
+        #addMultaForm {
+          display: none; /* Ocultar el formulario por defecto */
+        }
+
+        #toggleFormBtn {
+          margin: 10px 0;
+        }
+      </style>
+    </div>
+  </body>
+</html>
