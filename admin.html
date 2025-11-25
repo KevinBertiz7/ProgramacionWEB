@@ -199,7 +199,7 @@
                 <h3>Agregar Nueva Multa</h3>
                 <form onsubmit="return false;">
                     <div class="form-group">
-                        <label for="fineUser">Usuario:</label>
+                        <label for="fineUser">Usuario (cédula):</label>
                         <input type="text" id="fineUser" required>
                     </div>
                     <div class="form-group">
@@ -210,14 +210,7 @@
                         <label for="fineAmount">Monto:</label>
                         <input type="number" id="fineAmount" required>
                     </div>
-                    <div class="form-group">
-                        <label for="fineStartDate">Fecha de Inicio:</label>
-                        <input type="date" id="fineStartDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="fineEndDate">Fecha de Fin:</label>
-                        <input type="date" id="fineEndDate" required>
-                    </div>
+                    <!-- Fechas eliminadas: se generan automáticamente -->
                     <button class="btn" onclick="addFine()">Guardar Multa</button>
                 </form>
             </div>
@@ -264,7 +257,6 @@
                 
                 updateBookList();
                 
-                // Limpiar el formulario
                 document.getElementById('bookTitle').value = '';
                 document.getElementById('bookAuthor').value = '';
                 document.getElementById('bookCategory').value = 'ficcion';
@@ -337,7 +329,6 @@
         }
 
         function editUser(index) {
-            // Implementar lógica para editar usuario
             alert('Función de editar usuario no implementada');
         }
 
@@ -404,10 +395,15 @@
             const user = document.getElementById('fineUser').value;
             const book = document.getElementById('fineBook').value;
             const amount = document.getElementById('fineAmount').value;
-            const startDate = document.getElementById('fineStartDate').value;
-            const endDate = document.getElementById('fineEndDate').value;
+
+            // Generar fechas automáticamente (hoy inicio, +7 días fin)
+            const today = new Date();
+            const startDate = today.toISOString().split('T')[0];
+            const endObj = new Date(today);
+            endObj.setDate(endObj.getDate() + 7);
+            const endDate = endObj.toISOString().split('T')[0];
             
-            if (user && book && amount && startDate && endDate) {
+            if (user && book && amount) {
                 const fine = { 
                     id: Date.now().toString(),
                     cedula: user, 
@@ -422,12 +418,9 @@
                 
                 updateFineList();
                 
-                // Limpiar el formulario
                 document.getElementById('fineUser').value = '';
                 document.getElementById('fineBook').value = '';
                 document.getElementById('fineAmount').value = '';
-                document.getElementById('fineStartDate').value = '';
-                document.getElementById('fineEndDate').value = '';
                 
                 toggleFineForm();
             } else {
@@ -463,8 +456,6 @@
             document.getElementById('fineUser').value = fine.cedula;
             document.getElementById('fineBook').value = fine.libro;
             document.getElementById('fineAmount').value = fine.monto;
-            document.getElementById('fineStartDate').value = fine.fechaInicio;
-            document.getElementById('fineEndDate').value = fine.fechaFin;
             
             toggleFineForm();
             fines.splice(index, 1);
@@ -481,7 +472,6 @@
             }
         }
 
-        // Cargar datos al iniciar la página
         document.addEventListener('DOMContentLoaded', function() {
             updateBookList();
             updateUserList();
