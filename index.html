@@ -154,6 +154,17 @@
     });
     localStorage.setItem("usuarios", JSON.stringify(usuarios));
   }
+if (!usuarios.some(u => u.email === "luis11@mail.com")) {
+    usuarios.push({
+      nombre: "luis",
+      apellido: "",
+      cedula: "4523123",
+      email: "luis11@gmail.com",
+      contrasena: "112233",
+      rol: "usuario"
+    });
+    localStorage.setItem("usuarios", JSON.stringify(usuarios));
+  }
 
   document.getElementById("loginForm").addEventListener("submit", function(event) {
     event.preventDefault();
