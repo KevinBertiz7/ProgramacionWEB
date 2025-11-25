@@ -157,7 +157,7 @@
 if (!usuarios.some(u => u.email === "luis11@mail.com")) {
     usuarios.push({
       nombre: "luis",
-      apellido: "",
+      apellido: "Carbonero",
       cedula: "4523123",
       email: "luis11@gmail.com",
       contrasena: "112233",
@@ -176,10 +176,10 @@ if (!usuarios.some(u => u.email === "luis11@mail.com")) {
 
     if (usuario) {
       localStorage.setItem("currentUser", JSON.stringify(usuario));
-      if (usuario.rol === "administrador") {
-        window.location.href = "admin.html";
-      } else {
+      if (usuario.rol === "usuario") {
         window.location.href = "GestionBiblioteca.html";
+      } else {
+        window.location.href = "admin.html";
       }
     } else {
       alert("Email o contraseña incorrectos");
